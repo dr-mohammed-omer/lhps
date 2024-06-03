@@ -1,70 +1,43 @@
 <?php
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $formid = $_POST['formid'];
-    $firstName = $_POST['first_name'];
-    $lastName = $_POST['last_name'];
-    $email = $_POST['email'];
-    $phone = $_POST['phone'];
-    $dob = $_POST['dob'];
-    $city = $_POST['city'];
-    $joinDate = $_POST['join_date'];
-    $comments = $_POST['comments'];
-
-    // Validation logic
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Validate input
     $errors = [];
-    if (empty($firstName)) {
-        $errors[] = "First name is required";
-    }
-    if (empty($lastName)) {
-        $errors[] = "Last name is required";
-    }
-    if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $errors[] = "Valid email is required";
-    }
-    if (empty($phone)) {
-        $errors[] = "Phone number is required";
-    }
-    if (empty($dob)) {
-        $errors[] = "Date of birth is required";
-    }
-    if (empty($city)) {
-        $errors[] = "City is required";
-    }
-    if (empty($joinDate)) {
-        $errors[] = "Join date is required";
-    }
-    if (empty($comments)) {
-        $errors[] = "Comments are required";
+    $requiredFields = ['first_name', 'last_name', 'email', 'phone', 'dob', 'city', 'join_date', 'comments'];
+    foreach ($requiredFields as $field) {
+        if (empty($_POST[$field])) {
+            $errors[$field] = ucfirst(str_replace('_', ' ', $field)) . ' is required';
+        }
     }
 
-    if (!empty($errors)) {
-        // Return errors to the user
-        echo implode("<br>", $errors);
-        exit;
-    }
+    if (count($errors) === 0) {
+        // Sanitize input
+        $firstName = filter_input(INPUT_POST, 'first_name', FILTER_SANITIZE_STRING);
+        $lastName = filter_input(INPUT_POST, 'last_name', FILTER_SANITIZE_STRING);
+        $email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL);
+        $phone = filter_input(INPUT_POST, 'phone', FILTER_SANITIZE_STRING);
+        $dob = filter_input(INPUT_POST, 'dob', FILTER_SANITIZE_STRING);
+        $city = filter_input(INPUT_POST, 'city', FILTER_SANITIZE_STRING);
+        $joinDate = filter_input(INPUT_POST, 'join_date', FILTER_SANITIZE_STRING);
+        $comments = filter_input(INPUT_POST, 'comments', FILTER_SANITIZE_STRING);
 
-    // If no validation errors, process the form data (e.g., store it in a database, send an email, etc.)
-    // For example, sending an email:
-    $to = "mdomer19967@gmail.com";
-    $subject = "New Form Submission";
-    $message = "Form ID: $formid\n";
-    $message .= "First Name: $firstName\n";
-    $message .= "Last Name: $lastName\n";
-    $message .= "Email: $email\n";
-    $message .= "Phone: $phone\n";
-    $message .= "Date of Birth: $dob\n";
-    $message .= "City: $city\n";
-    $message .= "Join Date: $joinDate\n";
-    $message .= "Comments: $comments\n";
-    
-    $headers = "From: no-reply@leadinghighschool.com";
-
-    if (mail($to, $subject, $message, $headers)) {
-        echo "Form submitted successfully!";
+        // Process the data (e.g., save to database)
+        // For demonstration purposes, we'll just print the data
+        echo "First Name: $firstName<br>";
+        echo "Last Name: $lastName<br>";
+        echo "Email: $email<br>";
+        echo "Phone: $phone<br>";
+        echo "Date of Birth: $dob<br>";
+        echo "City: $city<br>";
+        echo "Join Date: $joinDate<br>";
+        echo "Comments: $comments<br>";
     } else {
-        echo "There was an error submitting the form. Please try again.";
+        // Display errors
+        foreach ($errors as $error) {
+            echo "$error<br>";
+        }
     }
 } else {
-    echo "Invalid form submission.";
+    http_response_code(405);
+    echo 'Method Not Allowed';
 }
 ?>

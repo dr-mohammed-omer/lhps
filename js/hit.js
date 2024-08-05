@@ -9,7 +9,6 @@ if (!WebPlatform.onReady) {
     };
 }
 
-
 WebPlatform.collectPageStats = () => {
     if (WebPlatform._pageStatsCollected === true) {
         return;

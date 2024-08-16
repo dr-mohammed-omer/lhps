@@ -8,7 +8,7 @@ if (!WebPlatform.onReady) {
         }
     };
 }
-
+PictureInPictureWindow
 WebPlatform.collectPageStats = () => {
     if (WebPlatform._pageStatsCollected === true) {
         return;
